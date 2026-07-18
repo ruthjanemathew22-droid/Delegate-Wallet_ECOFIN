@@ -1099,33 +1099,33 @@
         //  WALLET RENDERING
         // ==========================================================
         function renderWallets() {
-            const container = document.getElementById("walletContainer");
-            if (!container) return;
-            container.innerHTML = "";
-            delegates.forEach((delegate, index) => {
-                const card = document.createElement("div");
-                card.className = delegate.frozen ? "wallet-card frozen" : "wallet-card";
-                card.innerHTML = `
-                    <div class="wallet-top">
-                        <div class="country">
-                            <div class="flag">${flag(delegate.name)}</div>
-                            <div>
-                                <h3>${delegate.name}</h3>
-                                <div class="wallet-status">${delegate.frozen ? "Frozen" : "Active"}</div>
-                            </div>
-                        </div>
-                        <div class="credit-value">${delegate.credits}</div>
+    const container = document.getElementById("walletContainer");
+    if (!container) return;
+    container.innerHTML = "";
+    delegates.forEach((delegate, index) => {
+        const card = document.createElement("div");
+        card.className = delegate.frozen ? "wallet-card frozen" : "wallet-card";
+        card.innerHTML = `
+            <div class="wallet-top">
+                <div class="country">
+                    <div class="flag">${flag(delegate.name)}</div>
+                    <div>
+                        <h3>${delegate.name}</h3>
+                        <div class="wallet-status">${delegate.frozen ? "Frozen" : "Active"}</div>
                     </div>
-                    <div class="wallet-buttons">
-                        <button class="wallet-plus" onclick="changeCredits('${delegate.id}',10)">+10</button>
-                        <button class="wallet-minus" onclick="changeCredits('${delegate.id}',-10)">-10</button>
-                        <button class="wallet-freeze" onclick="toggleFreeze('${delegate.id}')">${delegate.frozen ? "Unfreeze" : "Freeze"}</button>
-                        ${adminMode ? `<button class="wallet-history" onclick="showPurchases('${delegate.id}')">View Purchases</button>` : ""}
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+                </div>
+                <div class="credit-value">${delegate.credits}</div>
+            </div>
+            <div class="wallet-buttons">
+                <button class="wallet-plus" onclick="changeCredits('${delegate.id}',10)">+10</button>
+                <button class="wallet-minus" onclick="changeCredits('${delegate.id}',-10)">-10</button>
+                <button class="wallet-freeze" onclick="toggleFreeze('${delegate.id}')">${delegate.frozen ? "Unfreeze" : "Freeze"}</button>
+                <button class="wallet-history" onclick="showPurchases('${delegate.id}')">View Purchases</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 
         // ==========================================================
         //  CREDIT MANAGEMENT
@@ -1170,34 +1170,30 @@
         //  PURCHASE HISTORY MODAL
         // ==========================================================
         function showPurchases(id) {
-            if (!adminMode) {
-                toast("Administrator access required");
-                return;
-            }
-            const delegate = delegates.find(d => d.id === id);
-            if (!delegate) return;
-            const modal = document.getElementById("purchaseModal");
-            const content = document.getElementById("purchaseModalContent");
-            let html = `
-                <h2>${flag(delegate.name)} ${delegate.name.toUpperCase()}</h2>
-                <br>
-                <h3>Purchased Perks</h3>
+    const delegate = delegates.find(d => d.id === id);
+    if (!delegate) return;
+    const modal = document.getElementById("purchaseModal");
+    const content = document.getElementById("purchaseModalContent");
+    let html = `
+        <h2>${flag(delegate.name)} ${delegate.name.toUpperCase()}</h2>
+        <br>
+        <h3>Purchased Perks</h3>
+    `;
+    if (delegate.purchases.length === 0) {
+        html += `<div class="purchase-item">No purchases yet.</div>`;
+    } else {
+        delegate.purchases.forEach(perk => {
+            html += `
+                <div class="purchase-item">
+                    <span>✓ ${perk.name}</span>
+                    <strong>${perk.cost} Credits</strong>
+                </div>
             `;
-            if (delegate.purchases.length === 0) {
-                html += `<div class="purchase-item">No purchases yet.</div>`;
-            } else {
-                delegate.purchases.forEach(perk => {
-                    html += `
-                        <div class="purchase-item">
-                            <span>✓ ${perk.name}</span>
-                            <strong>${perk.cost} Credits</strong>
-                        </div>
-                    `;
-                });
-            }
-            content.innerHTML = html;
-            modal.classList.add("active");
-        }
+        });
+    }
+    content.innerHTML = html;
+    modal.classList.add("active");
+}
 
         document.getElementById("closePurchaseModal").addEventListener("click", () => {
             document.getElementById("purchaseModal").classList.remove("active");
